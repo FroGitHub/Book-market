@@ -8,7 +8,6 @@ import com.example.demo.model.Book;
 import com.example.demo.repository.BookRepository;
 import com.example.demo.service.BookService;
 import java.util.List;
-import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +22,6 @@ public class BookServiceImpl implements BookService {
     public BookDto save(CreateBookRequestDto createBookRequestDto) {
 
         Book newBook = bookMapper.toModel(createBookRequestDto);
-        newBook.setIsbn(String.valueOf(new Random().nextInt()));
         bookRepository.save(newBook);
         return bookMapper.toDto(newBook);
     }

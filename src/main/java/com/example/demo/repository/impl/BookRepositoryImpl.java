@@ -52,11 +52,12 @@ public class BookRepositoryImpl implements BookRepository {
     @Override
     public Optional<Book> findBookById(Long id) {
         try (Session session = sessionFactory.openSession()) {
-
             return Optional.ofNullable(session
                     .createQuery("FROM Book WHERE id = :id", Book.class)
                     .setParameter("id", id)
                     .uniqueResult());
+        } catch (Exception e) {
+            throw new DataProcessingException("Can`t find book with id: " + id);
         }
     }
 }
