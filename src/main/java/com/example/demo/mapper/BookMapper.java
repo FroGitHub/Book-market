@@ -5,6 +5,8 @@ import com.example.demo.dto.BookDto;
 import com.example.demo.dto.CreateBookRequestDto;
 import com.example.demo.model.Book;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper(config = MapperConfig.class)
 public interface BookMapper {
@@ -12,5 +14,7 @@ public interface BookMapper {
 
     Book toModel(CreateBookRequestDto createBookRequestDto);
 
-    Book toModel(BookDto bookDto);
+    @Mapping(target = "id", ignore = true)
+    void updateModel(CreateBookRequestDto createBookRequestDto, @MappingTarget Book book);
+
 }
