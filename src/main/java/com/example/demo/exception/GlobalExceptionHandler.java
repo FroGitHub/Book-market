@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     ) {
 
         Map<String, Object> body = new LinkedHashMap<>();
-        body.put("Time error", LocalDateTime.now());
+        body.put("Time", LocalDateTime.now());
 
         List<String> errors = ex.getBindingResult()
                 .getAllErrors().stream()
