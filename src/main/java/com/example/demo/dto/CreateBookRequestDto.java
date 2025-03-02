@@ -14,7 +14,7 @@ public class CreateBookRequestDto {
     @Size(max = 25, message = "Title must be up to 25 characters")
     private String title;
     @NotNull
-    @Size(max = 15, message = "Author name must be up to 15 characters")
+    @Size(max = 25, message = "Author name must be up to 25 characters")
     private String author;
     @NotNull
     @ISBN
