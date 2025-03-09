@@ -2,7 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.user.UserRegistrationRequestDto;
 import com.example.demo.dto.user.UserResponseDto;
-import com.example.demo.service.AuthService;
+import com.example.demo.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,10 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/auth")
 public class AuthController {
 
-    private final AuthService authService;
+    private final UserService userService;
 
+    @Operation(summary = "Registration",
+            description = "Takes user data, validates them and returns registered user")
     @GetMapping("/registration")
     public UserResponseDto register(@RequestBody @Valid UserRegistrationRequestDto request) {
-        return authService.register(request);
+        return userService.register(request);
     }
 }
