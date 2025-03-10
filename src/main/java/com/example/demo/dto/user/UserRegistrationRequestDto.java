@@ -1,13 +1,13 @@
 package com.example.demo.dto.user;
 
-import com.example.demo.validation.PasswordMatches;
+import com.example.demo.validation.FieldMatches;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-@PasswordMatches
+@FieldMatches
 public class UserRegistrationRequestDto {
     @NotBlank
     @Email

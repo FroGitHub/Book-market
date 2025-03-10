@@ -7,10 +7,10 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Constraint(validatedBy = PasswordMatchesValidator.class)
+@Constraint(validatedBy = FieldMatchesValidator.class)
 @Target({ ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
-public @interface PasswordMatches {
+public @interface FieldMatches {
     String message() default "Wrong repeat password";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
