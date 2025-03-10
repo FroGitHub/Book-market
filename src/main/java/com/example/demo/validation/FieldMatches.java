@@ -14,4 +14,6 @@ public @interface FieldMatches {
     String message() default "Wrong repeat password";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
+
+    String[] fields();
 }
