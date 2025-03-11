@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: 05-insert-role
+      author: student_Ma
+      changes:
+        - sql:
+            dbms: mysql
+            comment: "Insert roles"
+            sql: |
+              insert into madb.roles(id, name) values (1, 'ROLE_ADMIN');
+              insert into madb.roles(id, name) values (2, 'ROLE_USER');
+
+
