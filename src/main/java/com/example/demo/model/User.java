@@ -12,13 +12,11 @@ import jakarta.persistence.Table;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 @Entity
@@ -58,11 +56,8 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles.stream()
-                .map(i -> new SimpleGrantedAuthority(i.getName().name()))
-                .collect(Collectors.toList());
-    } // I get error when I use "return roles;"
-    // and have to cast "Collection<? extends GrantedAuthority> roles;"(it does`t work neither)
+        return roles;
+    }
 
     @Override
     public String getUsername() {
