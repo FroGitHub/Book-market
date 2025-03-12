@@ -15,6 +15,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +25,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 @Table(name = "users")
 @Getter
 @Setter
+@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id = ?")
+@Where(clause = "is_deleted = false")
 public class User implements UserDetails {
 
     @Id
@@ -37,6 +41,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String lastName;
     private String shippingAddress;
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean isDeleted = false;
+
     @ManyToMany
     @JoinTable(
             name = "users_roles",
@@ -45,12 +52,17 @@ public class User implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
+    public void addRole(Role role) {
+        roles.add(role);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles.stream()
                 .map(i -> new SimpleGrantedAuthority(i.getName().name()))
                 .collect(Collectors.toList());
-    }
+    } // I get error when I use "return roles;"
+    // and have to cast "Collection<? extends GrantedAuthority> roles;"(it does`t work neither)
 
     @Override
     public String getUsername() {
@@ -79,6 +91,6 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return !isDeleted;
     }
 }

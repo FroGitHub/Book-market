@@ -1,5 +1,6 @@
 package com.example.demo.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -13,14 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
-
-    public SecurityConfig(UserDetailsService userDetailsService) {
-        this.userDetailsService = userDetailsService;
-    }
 
     @Bean
     public PasswordEncoder getPasswordEncoder() {
@@ -37,8 +35,7 @@ public class SecurityConfig {
                                 .requestMatchers("/auth/**", "/error",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
-                                        "/swagger-resources/**",
-                                        "/webjars/**")
+                                        "/swagger-resources/**")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated()
