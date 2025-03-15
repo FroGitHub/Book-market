@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -40,6 +41,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler
     public ResponseEntity<String> handlerRegistrationException(RegistrationException ex) {
         return new ResponseEntity<>(ex.getMessage(),
+                HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<String> handlerAuthorizationException(AuthorizationDeniedException ex) {
+        return new ResponseEntity<>("Access denied",
                 HttpStatus.CONFLICT);
     }
 
