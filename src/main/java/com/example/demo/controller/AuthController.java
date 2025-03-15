@@ -31,6 +31,8 @@ public class AuthController {
         return userService.register(request);
     }
 
+    @Operation(summary = "Logging",
+            description = "Takes email and password, returns JWT")
     @GetMapping("/login")
     public UserResponseLoginDto login(@RequestBody @Valid UserLoginDto userLoginDto) {
         return authenticationService.authenticate(userLoginDto);
