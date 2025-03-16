@@ -2,6 +2,7 @@ package com.example.demo.mapper;
 
 import com.example.demo.config.MapperConfig;
 import com.example.demo.dto.book.BookDto;
+import com.example.demo.dto.book.BookDtoWithoutCategoryIds;
 import com.example.demo.dto.book.CreateBookRequestDto;
 import com.example.demo.model.Book;
 import com.example.demo.model.Category;
@@ -24,6 +25,8 @@ public interface BookMapper {
                 .collect(Collectors.toSet())
         );
     }
+
+    BookDtoWithoutCategoryIds toDtoWithoutCategoryIds(Book book);
 
     @Mapping(target = "categories", source = "categoryIds", qualifiedByName = "categoriesById")
     Book toModel(CreateBookRequestDto createBookRequestDto);

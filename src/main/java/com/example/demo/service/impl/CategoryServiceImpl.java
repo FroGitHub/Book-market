@@ -1,6 +1,6 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.book.BookDto;
+import com.example.demo.dto.book.BookDtoWithoutCategoryIds;
 import com.example.demo.dto.category.CategoryCreateDto;
 import com.example.demo.dto.category.CategoryDto;
 import com.example.demo.exception.EntityNotFoundException;
@@ -67,9 +67,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<BookDto> findBooksByCategory(Pageable pageable, Long id) {
+    public List<BookDtoWithoutCategoryIds> findBooksByCategory(Pageable pageable, Long id) {
         return bookRepository.findByCategories_Id(id, pageable).stream()
-                .map(bookMapper::toDto)
+                .map(bookMapper::toDtoWithoutCategoryIds)
                 .toList();
     }
 

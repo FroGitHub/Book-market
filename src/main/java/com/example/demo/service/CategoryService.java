@@ -1,6 +1,6 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.book.BookDto;
+import com.example.demo.dto.book.BookDtoWithoutCategoryIds;
 import com.example.demo.dto.category.CategoryCreateDto;
 import com.example.demo.dto.category.CategoryDto;
 import java.util.List;
@@ -17,5 +17,5 @@ public interface CategoryService {
 
     void deleteCategory(Long id);
 
-    List<BookDto> findBooksByCategory(Pageable pageable, Long id);
+    List<BookDtoWithoutCategoryIds> findBooksByCategory(Pageable pageable, Long id);
 }

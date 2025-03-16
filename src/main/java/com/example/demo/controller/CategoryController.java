@@ -1,6 +1,6 @@
 package com.example.demo.controller;
 
-import com.example.demo.dto.book.BookDto;
+import com.example.demo.dto.book.BookDtoWithoutCategoryIds;
 import com.example.demo.dto.category.CategoryCreateDto;
 import com.example.demo.dto.category.CategoryDto;
 import com.example.demo.service.CategoryService;
@@ -60,7 +60,8 @@ public class CategoryController {
 
     @GetMapping("/{id}/books")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public List<BookDto> getBooksByCategory(Pageable pageable, @PathVariable Long id) {
+    public List<BookDtoWithoutCategoryIds> getBooksByCategory(Pageable pageable,
+                                                              @PathVariable Long id) {
         return categoryService.findBooksByCategory(pageable, id);
     }
 
