@@ -3,11 +3,11 @@ package com.example.demo.service;
 import com.example.demo.dto.book.BookDtoWithoutCategoryIds;
 import com.example.demo.dto.category.CategoryCreateDto;
 import com.example.demo.dto.category.CategoryDto;
-import java.util.List;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface CategoryService {
-    List<CategoryDto> findAll(Pageable pageable);
+    Page<CategoryDto> findAll(Pageable pageable);
 
     CategoryDto saveCategory(CategoryCreateDto categoryCreateDto);
 
@@ -17,5 +17,5 @@ public interface CategoryService {
 
     void deleteCategory(Long id);
 
-    List<BookDtoWithoutCategoryIds> findBooksByCategory(Pageable pageable, Long id);
+    Page<BookDtoWithoutCategoryIds> findBooksByCategory(Pageable pageable, Long id);
 }

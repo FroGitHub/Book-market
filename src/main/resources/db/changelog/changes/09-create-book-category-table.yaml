@@ -1,19 +1,5 @@
 databaseChangeLog:
   - changeSet:
-      id: 09-update-books-table
-      author: student_Ma
-      changes:
-        - addColumn:
-            tableName: books
-            columns:
-              - column:
-                  name: is_deleted
-                  type: TINYINT(1)
-                  constraints:
-                    nullable: false
-                  defaultValueBoolean: false
-
-  - changeSet:
       id: 09-create-book-category-table
       author: student_Ma
       changes:

@@ -10,8 +10,8 @@ import com.example.demo.model.Category;
 import com.example.demo.repository.book.BookRepository;
 import com.example.demo.repository.category.CategoryRepository;
 import com.example.demo.service.CategoryService;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +27,9 @@ public class CategoryServiceImpl implements CategoryService {
     private final BookMapper bookMapper;
 
     @Override
-    public List<CategoryDto> findAll(Pageable pageable) {
-        return categoryRepository.findAll(pageable).stream()
-                .map(categoryMapper::toDto)
-                .toList();
+    public Page<CategoryDto> findAll(Pageable pageable) {
+        return categoryRepository.findAll(pageable)
+                .map(categoryMapper::toDto);
     }
 
     @Override
@@ -67,10 +66,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<BookDtoWithoutCategoryIds> findBooksByCategory(Pageable pageable, Long id) {
-        return bookRepository.findByCategories_Id(id, pageable).stream()
-                .map(bookMapper::toDtoWithoutCategoryIds)
-                .toList();
+    public Page<BookDtoWithoutCategoryIds> findBooksByCategory(Pageable pageable, Long id) {
+        return bookRepository.findByCategoriesId(id, pageable)
+                .map(bookMapper::toDtoWithoutCategoryIds);
     }
 
 }
