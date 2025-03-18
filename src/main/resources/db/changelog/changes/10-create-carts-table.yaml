@@ -1,0 +1,21 @@
+databaseChangeLog:
+  - changeSet:
+      id: 10-create-carts-table
+      author: student_Ma
+      changes:
+        - createTable:
+            tableName: carts
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT AUTO_INCREMENT
+                  constraints:
+                    primaryKey: true
+                    autoIncrement: true
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_carts_users
+                    references: users(id)

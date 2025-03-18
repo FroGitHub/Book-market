@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: book_id
-                  type: BIGINT
+                  type: BIGINT AUTO_INCREMENT
                   constraints:
                     nullable: false
                     references: books(id)
