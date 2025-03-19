@@ -51,10 +51,6 @@ public class User implements UserDetails {
     )
     private Set<Role> roles;
 
-    public User(Long id) {
-        this.id = id;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;

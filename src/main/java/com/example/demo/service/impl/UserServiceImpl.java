@@ -5,8 +5,10 @@ import com.example.demo.dto.user.UserResponseDto;
 import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.exception.RegistrationException;
 import com.example.demo.mapper.UserMapper;
+import com.example.demo.model.Cart;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
+import com.example.demo.repository.cart.CartRepository;
 import com.example.demo.repository.role.RoleRepository;
 import com.example.demo.repository.user.UserRepository;
 import com.example.demo.service.UserService;
@@ -25,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final CartRepository cartRepository;
 
     @Override
     public UserResponseDto register(UserRegistrationRequestDto userRegistrationRequestDto) {
@@ -40,6 +43,14 @@ public class UserServiceImpl implements UserService {
                         "Role is not found: " + Role.RoleName.ROLE_USER)
                 );
         user.setRoles(Set.of(role));
-        return userMapper.toDto(userRepository.save(user));
+
+        userRepository.save(user);
+
+        // створюю нову карту
+        Cart newCart = new Cart();
+        newCart.setUser(user);
+        cartRepository.save(newCart);
+
+        return userMapper.toDto(user);
     }
 }

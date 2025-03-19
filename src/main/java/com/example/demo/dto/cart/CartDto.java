@@ -8,5 +8,4 @@ public class CartDto {
     private Long id;
     private Long userId;
     private Set<CartItemDto> cartItemDtos;
-
 }

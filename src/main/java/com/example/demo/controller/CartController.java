@@ -2,14 +2,11 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.cart.CartDto;
 import com.example.demo.dto.cart.CartItemCreateRequestDto;
-import com.example.demo.dto.cart.CartItemCreateResponseDto;
 import com.example.demo.service.CartService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -33,21 +30,21 @@ public class CartController {
     @Operation(summary = "Get cart",
             description = "Returns authorized user`s cart with list of items")
     @GetMapping
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public Page<CartDto> getCarts(Authentication authentication, Pageable pageable) {
-        return cartService.getCarts(authentication, pageable);
+    @PreAuthorize("hasRole('USER')")
+    public CartDto getCarts(Authentication authentication) {
+        return cartService.getCarts(authentication);
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public void createCart(Authentication authentication,
+    @PreAuthorize("hasRole('USER')")
+    public CartDto createCart(Authentication authentication,
                            @RequestBody @Valid CartItemCreateRequestDto createItemRequestDto) {
-        cartService.addCartItem(authentication, createItemRequestDto);
+        return cartService.addCartItem(authentication, createItemRequestDto);
     }
 
     @PutMapping("/item/{cartItemId}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public CartItemCreateResponseDto updateCartItem(
+    @PreAuthorize("hasRole('USER')")
+    public CartDto updateCartItem(
             Authentication authentication,
             @PathVariable Long cartItemId,
             @RequestBody @Valid CartItemCreateRequestDto createItemRequestDto
@@ -56,7 +53,7 @@ public class CartController {
     }
 
     @DeleteMapping("/item/{cartItemId}")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('USER')")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteCartItem(@PathVariable Long cartItemId) {
         cartService.deleteCart(cartItemId);

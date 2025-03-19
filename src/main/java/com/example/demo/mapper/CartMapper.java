@@ -5,6 +5,7 @@ import com.example.demo.dto.cart.CartDto;
 import com.example.demo.model.Cart;
 import com.example.demo.model.User;
 import org.mapstruct.AfterMapping;
+import org.mapstruct.Context;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -23,7 +24,7 @@ public interface CartMapper {
     Cart toModel(CartDto cartDto);
 
     @AfterMapping
-    default void implUser(@MappingTarget Cart cart, CartDto cartDto) {
-        cart.setUser(new User(cartDto.getUserId()));
+    default void implUser(@MappingTarget Cart cart, CartDto cartDto, @Context User user) {
+        cart.setUser(user);
     }
 }

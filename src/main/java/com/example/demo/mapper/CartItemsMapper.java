@@ -2,7 +2,6 @@ package com.example.demo.mapper;
 
 import com.example.demo.config.MapperConfig;
 import com.example.demo.dto.cart.CartItemCreateRequestDto;
-import com.example.demo.dto.cart.CartItemCreateResponseDto;
 import com.example.demo.dto.cart.CartItemDto;
 import com.example.demo.model.Book;
 import com.example.demo.model.CartItem;
@@ -24,8 +23,6 @@ public interface CartItemsMapper {
     @Mapping(target = "book", ignore = true)
     @Mapping(target = "cart", ignore = true)
     CartItem toModel(CartItemCreateRequestDto createItemRequestDto);
-
-    CartItemCreateResponseDto toResponseDto(CartItem cartItem);
 
     @AfterMapping
     default void implBook(@MappingTarget CartItem cartItem,

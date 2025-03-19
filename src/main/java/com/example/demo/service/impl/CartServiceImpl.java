@@ -2,20 +2,19 @@ package com.example.demo.service.impl;
 
 import com.example.demo.dto.cart.CartDto;
 import com.example.demo.dto.cart.CartItemCreateRequestDto;
-import com.example.demo.dto.cart.CartItemCreateResponseDto;
 import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.mapper.CartItemsMapper;
 import com.example.demo.mapper.CartMapper;
+import com.example.demo.model.Book;
 import com.example.demo.model.Cart;
 import com.example.demo.model.CartItem;
 import com.example.demo.model.User;
+import com.example.demo.repository.book.BookRepository;
 import com.example.demo.repository.cart.CartItemRepository;
 import com.example.demo.repository.cart.CartRepository;
-import com.example.demo.repository.user.UserRepository;
 import com.example.demo.service.CartService;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,45 +28,66 @@ public class CartServiceImpl implements CartService {
     private final CartMapper cartMapper;
     private final CartItemRepository cartItemRepository;
     private final CartItemsMapper cartItemMapper;
-    private final UserRepository userRepository;
+    private final BookRepository bookRepository;
 
     @Override
-    public Page<CartDto> getCarts(Authentication authentication, Pageable pageable) {
-        return cartRepository
-                .findByUserEmail(pageable, authentication.getName())
-                .map(cartMapper::toDto);
+    public CartDto getCarts(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        return cartMapper.toDto(
+                cartRepository.findByUserId(user.getId())
+                        .orElseThrow(() -> new EntityNotFoundException(
+                                "No cart with user id: " + user.getId()
+                        ))
+        );
     }
 
     @Override
-    public void addCartItem(Authentication authentication,
-                            CartItemCreateRequestDto createItemRequestDto) {
+    @Transactional
+    public CartDto addCartItem(Authentication authentication,
+                               CartItemCreateRequestDto createItemRequestDto) {
+        User user = (User) authentication.getPrincipal();
 
-        String email = authentication.getName();
-        Cart cart = cartRepository.findByUserEmail(email).orElseGet(() -> {
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new EntityNotFoundException("No user with email: " + email));
-            Cart newCart = new Cart();
-            newCart.setUser(user);
-            return cartRepository.save(newCart);
-        });
-        CartItem cartItem = cartItemMapper.toModel(createItemRequestDto);
-        cartItem.setCart(cart);
-        cart.getCartItems().add(cartItem);
-        cartRepository.save(cart);
-        cartItemMapper.toResponseDto(cartItem);
+        Cart cart = cartRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "No user’s cart with id: " + user.getId()));
+
+        Book book = bookRepository.findById(createItemRequestDto.getBookId())
+                .orElseThrow(() -> new EntityNotFoundException(
+                        "Book not found with id: " + createItemRequestDto.getBookId())
+                );
+
+        Optional<CartItem> existingItem = cart.getCartItems().stream()
+                .filter(item -> item.getBook().getId().equals(book.getId()))
+                .findFirst();
+
+        if (existingItem.isPresent()) {
+            existingItem.get().setQuantity(
+                    existingItem.get().getQuantity() + createItemRequestDto.getQuantity());
+        } else {
+            CartItem newCartItem = new CartItem();
+            newCartItem.setBook(book);
+            newCartItem.setQuantity(createItemRequestDto.getQuantity());
+            newCartItem.setCart(cart);
+            cart.getCartItems().add(newCartItem);
+        }
+
+        return cartMapper.toDto(cartRepository.save(cart));
     }
 
     @Override
-    public CartItemCreateResponseDto updateCartItem(Authentication authentication,
-                                                    Long cartItemId,
-                                                    CartItemCreateRequestDto createItemRequestDto) {
+    public CartDto updateCartItem(Authentication authentication, Long cartItemId,
+                                  CartItemCreateRequestDto createItemRequestDto) {
+        User user = (User) authentication.getPrincipal();
 
-        CartItem cartItem = cartItemRepository.findById(cartItemId)
+        CartItem cartItem = cartItemRepository
+                .findByIdAndCartUserId(cartItemId, user.getId())
                 .orElseThrow(() -> new EntityNotFoundException(
                         "No cart item with id: " + cartItemId));
 
         cartItemMapper.updateCartItem(cartItem, createItemRequestDto);
-        return cartItemMapper.toResponseDto(cartItemRepository.save(cartItem));
+        cartItemRepository.save(cartItem);
+
+        return cartMapper.toDto(cartItem.getCart());
     }
 
     @Override
