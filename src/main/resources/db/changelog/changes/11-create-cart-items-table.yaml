@@ -8,10 +8,10 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT AUTO_INCREMENT
+                  type: bigint
+                  autoIncrement: true
                   constraints:
                     primaryKey: true
-                    autoIncrement: true
               - column:
                   name: cart_id
                   type: bigint

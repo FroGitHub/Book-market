@@ -13,6 +13,7 @@ import com.example.demo.repository.book.BookRepository;
 import com.example.demo.repository.cart.CartItemRepository;
 import com.example.demo.repository.cart.CartRepository;
 import com.example.demo.service.CartService;
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -29,6 +30,7 @@ public class CartServiceImpl implements CartService {
     private final CartItemRepository cartItemRepository;
     private final CartItemsMapper cartItemMapper;
     private final BookRepository bookRepository;
+    private final EntityManager entityManager;
 
     @Override
     public CartDto getCarts(Authentication authentication) {
@@ -42,14 +44,16 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    @Transactional
     public CartDto addCartItem(Authentication authentication,
                                CartItemCreateRequestDto createItemRequestDto) {
         User user = (User) authentication.getPrincipal();
 
         Cart cart = cartRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "No user’s cart with id: " + user.getId()));
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    newCart.setUser(entityManager.merge(user));
+                    return cartRepository.save(newCart);
+                });
 
         Book book = bookRepository.findById(createItemRequestDto.getBookId())
                 .orElseThrow(() -> new EntityNotFoundException(

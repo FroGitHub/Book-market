@@ -5,7 +5,6 @@ import com.example.demo.dto.user.UserResponseDto;
 import com.example.demo.exception.EntityNotFoundException;
 import com.example.demo.exception.RegistrationException;
 import com.example.demo.mapper.UserMapper;
-import com.example.demo.model.Cart;
 import com.example.demo.model.Role;
 import com.example.demo.model.User;
 import com.example.demo.repository.cart.CartRepository;
@@ -44,13 +43,6 @@ public class UserServiceImpl implements UserService {
                 );
         user.setRoles(Set.of(role));
 
-        userRepository.save(user);
-
-        // створюю нову карту
-        Cart newCart = new Cart();
-        newCart.setUser(user);
-        cartRepository.save(newCart);
-
-        return userMapper.toDto(user);
+        return userMapper.toDto(userRepository.save(user));
     }
 }
