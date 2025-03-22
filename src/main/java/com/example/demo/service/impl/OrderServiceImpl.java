@@ -46,7 +46,6 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    @Transactional
     public OrderDto createOrder(Authentication authentication,
                                 OrderCreateRequestDto requestDto) {
         User user = (User) authentication.getPrincipal();
