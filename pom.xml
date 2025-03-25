@@ -179,7 +179,6 @@
 					<sourceDirectories>
 						<sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
 					</sourceDirectories>
-
 				</configuration>
 			</plugin>
 
