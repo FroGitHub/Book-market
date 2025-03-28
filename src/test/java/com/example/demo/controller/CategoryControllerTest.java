@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
-import static org.mockito.ArgumentMatchers.any;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -9,80 +11,63 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.example.demo.dto.category.CategoryCreateDto;
 import com.example.demo.dto.category.CategoryDto;
 import com.example.demo.dto.book.BookDtoWithoutCategoryIds;
-import com.example.demo.security.JwtUtil;
-import com.example.demo.service.CategoryService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
-@WebMvcTest(CategoryController.class)
+@SpringBootTest
+@AutoConfigureMockMvc
 @WithMockUser(username = "test", roles = {"USER", "ADMIN"})
+@Sql(scripts = {
+        "classpath:database/book/add-category-for-book.sql",
+        "classpath:database/book/add-book-to-table.sql"
+}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = "classpath:database/book/delete-book-and-category.sql",
+        executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class CategoryControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private CategoryService categoryService;
-
-    @MockBean
-    private JwtUtil jwtUtil;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
-    void getAllCategories_ReturnsPageOfCategories() throws Exception {
-        CategoryDto categoryDto = new CategoryDto();
-        categoryDto.setId(1L);
-        categoryDto.setName("Technology");
-        Page<CategoryDto> expectedCategories = new PageImpl<>(List.of(categoryDto));
-
-        Mockito.when(categoryService.findAll(any(Pageable.class)))
-                .thenReturn(expectedCategories);
-
+    @DisplayName("Test get all categories")
+    void getAllCategoriesTest() throws Exception {
         MvcResult result = mockMvc.perform(get("/categories")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        JsonNode contentNode = objectMapper.readTree(result
-                        .getResponse()
-                        .getContentAsString())
-                .get("content");
-        List<CategoryDto> categories = objectMapper
-                .readValue(contentNode.toString(), new TypeReference<>() {});
-        Page<CategoryDto> actual = new PageImpl<>(categories);
+        JsonNode contentNode = objectMapper.readTree(result.getResponse().getContentAsString()).get("content");
+        List<CategoryDto> categories = objectMapper.readValue(contentNode.toString(), new TypeReference<>() {});
 
-        EqualsBuilder.reflectionEquals(expectedCategories, actual);
-
+        assertNotNull(categories);
+        assertEquals(categories.size(), 1);
+        assertEquals("Technology", categories.get(0).getName());
     }
 
     @Test
-    void createCategory_ReturnsCreatedCategory() throws Exception {
-        CategoryCreateDto request = new CategoryCreateDto();
-        request.setName("Science");
-        request.setDescription("Something like since or frogs");
-        CategoryDto expectedCategory = new CategoryDto();
-        expectedCategory.setId(2L);
-        expectedCategory.setName("Science");
-        Mockito.when(categoryService.saveCategory(any(CategoryCreateDto.class)))
-                .thenReturn(expectedCategory);
-
-        String json = objectMapper.writeValueAsString(request);
+    @DisplayName("Test create category")
+    @Sql(scripts = "classpath:database/category/delete-category-with-id-2.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void createCategoryTest() throws Exception {
+        CategoryCreateDto categoryDto = new CategoryCreateDto();
+        categoryDto.setName("Science");
+        categoryDto.setDescription("desc");
+        String json = objectMapper.writeValueAsString(categoryDto);
 
         MvcResult result = mockMvc.perform(post("/categories")
                         .content(json)
@@ -91,34 +76,44 @@ public class CategoryControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        CategoryDto actual = objectMapper.readValue(
-                result.getResponse().getContentAsString(), CategoryDto.class);
-
-        EqualsBuilder.reflectionEquals(expectedCategory, actual);
+        CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), CategoryDto.class);
+        assertNotNull(actual.getId());
+        assertEquals(categoryDto.getName(), actual.getName());
     }
 
     @Test
-    void getBooksByCategory_ReturnsPageOfBooks() throws Exception {
-        BookDtoWithoutCategoryIds book = new BookDtoWithoutCategoryIds();
-        book.setId(1L);
-        book.setTitle("Java");
-        Page<BookDtoWithoutCategoryIds> expectedBooks = new PageImpl<>(List.of(book));
+    @DisplayName("Test get books by category")
+    void getBooksByCategoryTest() throws Exception {
+        long categoryId = 1;
 
-        Mockito.when(categoryService.findBooksByCategory(any(Pageable.class), any(Long.class)))
-                .thenReturn(expectedBooks);
-
-        MvcResult result = mockMvc.perform(get("/categories/1/books")
+        MvcResult result = mockMvc.perform(get("/categories/" + categoryId + "/books")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        JsonNode contentNode = objectMapper.readTree(
-                result.getResponse().getContentAsString()).get("content");
+        JsonNode contentNode = objectMapper.readTree(result.getResponse().getContentAsString()).get("content");
+        List<BookDtoWithoutCategoryIds> books = objectMapper.readValue(contentNode.toString(), new TypeReference<>() {});
 
-        List<BookDtoWithoutCategoryIds> books = objectMapper.readValue(
-                contentNode.toString(), new TypeReference<>() {});
-        Page<BookDtoWithoutCategoryIds> actual = new PageImpl<>(books);
+        assertNotNull(books);
+        assertEquals(1, books.size());
+        assertEquals("Java", books.get(0).getTitle());
+    }
 
-        EqualsBuilder.reflectionEquals(expectedBooks, actual);
+    @Test
+    @DisplayName("Test not valid category to create")
+    void validCategoryTest() throws Exception {
+        CategoryCreateDto categoryWithNullField = new CategoryCreateDto();
+        categoryWithNullField.setName(null);
+        String json = objectMapper.writeValueAsString(categoryWithNullField);
+
+        MvcResult result = mockMvc.perform(post("/categories")
+                        .content(json)
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        String actual = result.getResponse().getContentAsString();
+        assertTrue(actual.contains("must not be blank"));
     }
 }

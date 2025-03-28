@@ -14,8 +14,8 @@ import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Table(name = "category")
-@SQLDelete(sql = "UPDATE category SET is_deleted = 1 WHERE id = ?")
-@SQLRestriction("is_deleted = 0")
+@SQLDelete(sql = "UPDATE category SET is_deleted = true WHERE id = ?")
+@SQLRestriction("is_deleted = false")
 @NoArgsConstructor
 @Getter
 @Setter
@@ -26,8 +26,9 @@ public class Category {
     @Column(nullable = false)
     private String name;
     private String description;
+
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private boolean isDeleted;
+    private boolean isDeleted = false;
 
     public Category(Long id) {
         this.id = id;

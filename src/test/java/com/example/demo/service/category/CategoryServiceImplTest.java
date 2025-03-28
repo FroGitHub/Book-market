@@ -1,6 +1,9 @@
 package com.example.demo.service.category;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 import com.example.demo.dto.category.CategoryCreateDto;
 import com.example.demo.dto.category.CategoryDto;
@@ -10,7 +13,6 @@ import com.example.demo.repository.category.CategoryRepository;
 import com.example.demo.service.impl.CategoryServiceImpl;
 import java.util.List;
 import java.util.Optional;
-import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,9 +30,10 @@ class CategoryServiceImplTest {
 
     @Mock
     private CategoryRepository categoryRepository;
+
     @Mock
     private CategoryMapper categoryMapper;
-    
+
     @InjectMocks
     private CategoryServiceImpl categoryService;
 
@@ -56,42 +59,54 @@ class CategoryServiceImplTest {
     }
 
     @Test
-    void findAllTest_findAll_ReturnsPageOfCategories() {
+    @DisplayName("Find all categories")
+    void findAll_ShouldReturnPageOfCategories() {
         Pageable pageable = PageRequest.of(0, 10);
         Page<Category> categories = new PageImpl<>(List.of(category));
+
         when(categoryRepository.findAll(pageable)).thenReturn(categories);
         when(categoryMapper.toDto(category)).thenReturn(categoryDto);
 
         Page<CategoryDto> result = categoryService.findAll(pageable);
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals(1, result.getTotalElements());
-        Assert.assertEquals("Fiction", result.getContent().get(0).getName());
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Fiction", result.getContent().get(0).getName());
+
+        verify(categoryRepository).findAll(pageable);
+        verify(categoryMapper).toDto(category);
     }
 
     @Test
-    @DisplayName("Test saving category")
-    void saveCategoryTest_saveCategory_ReturnsSavedCategory() {
+    @DisplayName("Save category")
+    void saveCategory_ShouldReturnSavedCategory() {
         when(categoryMapper.toModel(categoryCreateDto)).thenReturn(category);
         when(categoryRepository.save(category)).thenReturn(category);
         when(categoryMapper.toDto(category)).thenReturn(categoryDto);
 
         CategoryDto result = categoryService.saveCategory(categoryCreateDto);
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals("Fiction", result.getName());
+        assertNotNull(result);
+        assertEquals("Fiction", result.getName());
+
+        verify(categoryRepository).save(category);
+        verify(categoryMapper).toDto(category);
     }
 
     @Test
-    @DisplayName("Test update category")
-    void updateCategoryTest_updateCategory_ReturnsUpdatedCategory() {
+    @DisplayName("Update category")
+    void updateCategory_ShouldReturnUpdatedCategory() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(category));
-        when(categoryMapper.toDto(category)).thenReturn(categoryDto);
         when(categoryRepository.save(category)).thenReturn(category);
+        when(categoryMapper.toDto(category)).thenReturn(categoryDto);
 
         CategoryDto result = categoryService.update(1L, categoryCreateDto);
 
-        Assert.assertNotNull(result);
-        Assert.assertEquals("Fiction", result.getName());
+        assertNotNull(result);
+        assertEquals("Fiction", result.getName());
+
+        verify(categoryRepository).findById(1L);
+        verify(categoryRepository).save(category);
+        verify(categoryMapper).toDto(category);
     }
 }

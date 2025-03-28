@@ -1,7 +1,10 @@
 package com.example.demo.repository.category;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import com.example.demo.ObjectUtil;
 import com.example.demo.model.Category;
-import org.junit.Assert;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.jdbc.Sql;
+import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -32,9 +36,11 @@ public class CategoryRepositoryTest {
 
          Page<Category> actualCategories = categoryRepository.findAll(pageable);
 
-         Assert.assertNotNull(actualCategories);
-         Assert.assertEquals(expectedSize, actualCategories.getSize());
-         Assert.assertEquals(expectedNumElements, actualCategories.getTotalElements());
+         assertNotNull(actualCategories);
+         assertEquals(expectedSize, actualCategories.getSize());
+         assertEquals(expectedNumElements, actualCategories.getTotalElements());
+         EqualsBuilder.reflectionEquals(ObjectUtil.getCategory(),
+                 actualCategories.getContent().get(0));
      }
 
 }
