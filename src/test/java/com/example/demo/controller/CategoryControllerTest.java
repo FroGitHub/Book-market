@@ -14,6 +14,7 @@ import com.example.demo.dto.book.BookDtoWithoutCategoryIds;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -57,6 +58,10 @@ public class CategoryControllerTest {
         assertNotNull(categories);
         assertEquals(categories.size(), 1);
         assertEquals("Technology", categories.get(0).getName());
+        assertEquals(
+                "Books of this category like interesting, I thing like...",
+                categories.get(0).getDescription());
+
     }
 
     @Test
@@ -76,9 +81,11 @@ public class CategoryControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
 
-        CategoryDto actual = objectMapper.readValue(result.getResponse().getContentAsString(), CategoryDto.class);
+        CategoryDto actual = objectMapper
+                .readValue(result.getResponse().getContentAsString(), CategoryDto.class);
         assertNotNull(actual.getId());
         assertEquals(categoryDto.getName(), actual.getName());
+        assertEquals(categoryDto.getDescription(), actual.getDescription());
     }
 
     @Test
@@ -92,11 +99,25 @@ public class CategoryControllerTest {
                 .andReturn();
 
         JsonNode contentNode = objectMapper.readTree(result.getResponse().getContentAsString()).get("content");
-        List<BookDtoWithoutCategoryIds> books = objectMapper.readValue(contentNode.toString(), new TypeReference<>() {});
+        List<BookDtoWithoutCategoryIds> books
+                = objectMapper.readValue(contentNode.toString(), new TypeReference<>() {});
 
         assertNotNull(books);
         assertEquals(1, books.size());
-        assertEquals("Java", books.get(0).getTitle());
+
+        BookDtoWithoutCategoryIds actualBookWithoutCategory = books.get(0);
+        assertBookWithoutCategory(actualBookWithoutCategory);
+    }
+
+    private void assertBookWithoutCategory(BookDtoWithoutCategoryIds book) {
+        assertNotNull(book);
+        assertEquals(1L, book.getId());
+        assertEquals("Java", book.getTitle());
+        assertEquals("author", book.getAuthor());
+        assertEquals("978-92-95055-02-5", book.getIsbn());
+        assertEquals(BigDecimal.valueOf(10.00), book.getPrice());
+        assertEquals("desc", book.getDescription());
+        assertEquals("path", book.getCoverImage());
     }
 
     @Test

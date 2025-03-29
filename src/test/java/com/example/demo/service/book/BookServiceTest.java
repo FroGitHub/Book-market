@@ -6,7 +6,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
-import com.example.demo.ObjectUtil;
+import com.example.demo.TestUtil;
 import com.example.demo.dto.book.BookDto;
 import com.example.demo.dto.book.BookSearchParametersDto;
 import com.example.demo.dto.book.CreateBookRequestDto;
@@ -47,7 +47,7 @@ class BookServiceTest {
     @DisplayName("Get book by id")
     void getBookById_ShouldReturnBookDto() {
         // Given
-        Book book = ObjectUtil.getBook();
+        Book book = TestUtil.getBook();
         BookDto expectedBookDto = new BookDto();
         expectedBookDto.setTitle(book.getTitle());
 
@@ -67,9 +67,9 @@ class BookServiceTest {
     @DisplayName("Update book")
     void updateBook_ShouldReturnUpdatedBookDto() {
         // Given
-        Book book = ObjectUtil.getBook();
-        CreateBookRequestDto requestDto = ObjectUtil.getRequestToUpdateBook();
-        Book updatedBook = ObjectUtil.getBook();
+        Book book = TestUtil.getBook();
+        CreateBookRequestDto requestDto = TestUtil.getRequestToUpdateBook();
+        Book updatedBook = TestUtil.getBook();
         updatedBook.setTitle(requestDto.getTitle());
         BookDto expectedBookDto = new BookDto();
         expectedBookDto.setTitle(requestDto.getTitle());
@@ -92,7 +92,7 @@ class BookServiceTest {
     @DisplayName("Search books by title")
     void searchBooks_ShouldReturnFilteredBooks() {
         // Big given
-        Book book = ObjectUtil.getBook();
+        Book book = TestUtil.getBook();
         BookDto bookDto = new BookDto();
         bookDto.setTitle(book.getTitle());
         Page<Book> bookPage = new PageImpl<>(List.of(book));

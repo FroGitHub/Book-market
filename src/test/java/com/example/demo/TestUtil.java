@@ -7,7 +7,7 @@ import com.example.demo.model.Category;
 import java.math.BigDecimal;
 import java.util.Set;
 
-public class ObjectUtil {
+public class TestUtil {
     private static final CreateBookRequestDto CREATE_BOOK_REQUEST_DTO
             = new CreateBookRequestDto();
     private static final CategoryCreateDto CATEGORY_CREATE_DTO
@@ -48,8 +48,7 @@ public class ObjectUtil {
         BOOK.setPrice(BigDecimal.valueOf(10.00));
         BOOK.setDescription("desc");
         BOOK.setCoverImage("path");
-
-        BOOK.setCategories(Set.of(CATEGORY));
+        BOOK.setCategories(Set.of(getCategory()));
         return BOOK;
     }
 }
