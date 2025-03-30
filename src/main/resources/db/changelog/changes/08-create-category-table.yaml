@@ -23,6 +23,7 @@ databaseChangeLog:
                   type: VARCHAR(500)
               - column:
                   name: is_deleted
-                  type: TINYINT(1)
+                  type: boolean
+                  defaultValueBoolean: false
                   constraints:
                     nullable: false
