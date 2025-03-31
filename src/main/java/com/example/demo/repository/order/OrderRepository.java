@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT o FROM Order o "
-            + "LEFT JOIN FETCH o.orderItems "
+            + "LEFT JOIN FETCH o.orderItems oi "
+            + "LEFT JOIN FETCH oi.book "
             + "WHERE o.user.id = :userId")
     Page<Order> findByUserId(Long userId, Pageable pageable);
 
