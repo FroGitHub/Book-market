@@ -21,6 +21,18 @@ For developing the book-store, I used the following **technologies**:
 	Spring Tests	3.4.2
 	Docker		1.20.4 (mysql, junit-jupiter)
 
+**Functional**
+
+User capabilities:
+1. Register and log in.
+2. View all books, sort them by category, or search by title/author/isbn.
+3. Add books to the cart, update or remove them.
+4. Create an order and track its status.
+
+Admin capabilities:
+1. Create, update, or delete book categories and books.
+2. Soft deletion is enabled, allowing you to restore deleted items if needed.
+
 **Book-store`s endpoints:**
 
 	Auth (/auth):
@@ -56,21 +68,35 @@ For developing the book-store, I used the following **technologies**:
             PATCH: /{id} - Update order status (ADMIN only)
 
 **Running Book-Store:**
+
+Docker:
 1. Install Docker Desktop (if not installed).
 
 2. Configure the .env file with your settings.
 
 3. Open the terminal and run the following commands:
 
-`    docker-compose build  # Build the images
-    docker-compose up     # Start the project
-    docker-compose down   # Stop the project`
+`docker-compose build  # Build the images `
+
+`docker-compose up     # Start the project`
+    
+`docker-compose down   # Stop the project`
 
 4. After starting the web server, download **book-store.postman_collection.json**(in README_FILES).
 
 5. Import it into Postman to test the functionality.
 
+Running Locally
+1. Open application.properties.
+
+2. Set the required database properties:
+   * Database URL
+   * Username
+   * Password
+
+3. Press "run"
+
 **Briefly**, I was interested while writing the book store project. I learned a lot about Spring, project structure, and potential problems I might encounter.
 The hardest part was implementing authentication logic and the filter chain.
 And here you can see the result:
-[Link to video](https://www.loom.com/share/d88f5029f0d1468082a609b2caf65e0a)
+[Link to video](https://www.loom.com/share/b345a15a218f4375aab35c4e7223edbd)
