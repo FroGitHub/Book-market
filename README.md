@@ -1,13 +1,13 @@
-# Book-store
+# Book Market
 
-Writing the book-store project was my task. 
+Writing the Book-market project was my task. 
 In it, we can register as a user, view a list of books, sort them, or search by categories. 
-We can also add a book to the cart and create an order.
+We can also add a book to the cart ****and create an order.
 
 **Model diagram:**
 ![img.png](README_FILES/img.png)
 
-For developing the book-store, I used the following **technologies**:
+For developing the Book-market, I used the following **technologies**:
 
 	Spring Boot	3.4.2
 	Spring Web	3.4.2
@@ -33,7 +33,7 @@ Admin capabilities:
 1. Create, update, or delete book categories and books.
 2. Soft deletion is enabled, allowing you to restore deleted items if needed.
 
-**Book-store`s endpoints:**
+**Book-market`s endpoints:**
 
 	Auth (/auth):
             GET: /registration - Register a new user
@@ -67,7 +67,7 @@ Admin capabilities:
             POST: / - Create a new order
             PATCH: /{id} - Update order status (ADMIN only)
 
-**Running Book-Store:**
+**Running Book-market:**
 
 Docker:
 1. Install Docker Desktop (if not installed).
